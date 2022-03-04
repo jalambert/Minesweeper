@@ -52,6 +52,9 @@ public boolean isWon() {
     }
   }
   if (countC == (NUM_ROWS*NUM_COLS)-NUM_MINES) {
+    for (int i = 0; i < mines.size(); i++) {
+      mines.get(i).win(color(0, 0, 200));
+    }
     return true;
   }
   return false;
@@ -66,7 +69,14 @@ public void displayLosingMessage() {
   }
 }
 public void displayWinningMessage() {
-  rect(200, 80, 200, 160);
+  for (int i = 0; i < mines.size(); i++) {
+    mines.get(i).win(color(0, 0, 200));
+  }
+  for(int r = 0; r < buttons.length; r++){
+    for(int c = 0; c < buttons[r].length; c++){
+      buttons[r][c].setLabel("W");
+    }
+  }
 }
 public boolean isValid(int r, int c) {
   if (r>=0&&r<NUM_ROWS&&c>=0&&c<NUM_COLS) {
@@ -107,6 +117,7 @@ public class MSButton {
   private float x, y, width, height;
   private boolean clicked, flagged;
   private String myLabel;
+  private color flaggedColor;
 
   public MSButton ( int row, int col ) {
     width = 600/NUM_COLS;
@@ -120,7 +131,9 @@ public class MSButton {
     Interactive.add( this );
   }
   public void mousePressed () {
-    clicked = true;
+    if (mouseButton == LEFT) {
+      clicked = true;
+    }
 
     if (!isWon()&&!gameOver) {
       if (mouseButton == RIGHT && myLabel == "") {
@@ -131,22 +144,17 @@ public class MSButton {
           clicked = false;
           flagged = !flagged;
         }
-      } else if (!flagged)
-      {
+      } else if (!flagged) {
         clicked = true;
-        if (mines.contains(this))
-        {
+        if (mines.contains(this)) {
           gameOver = true;
           displayLosingMessage();
         } else if (countMines(myRow, myCol) > 0) {
           setLabel("" + countMines(myRow, myCol));
         } else {
-          for (int rr = -1; rr < 2; rr++)
-          {
-            for (int cc = -1; cc < 2; cc++)
-            {
-              if (isValid(myRow+rr, myCol+cc) && buttons[myRow+rr][myCol+cc].clicked == false)
-              {
+          for (int rr = -1; rr < 2; rr++) {
+            for (int cc = -1; cc < 2; cc++) {
+              if (isValid(myRow+rr, myCol+cc) && buttons[myRow+rr][myCol+cc].clicked == false) {
                 buttons[myRow+rr][myCol+cc].mousePressed();
               }
             }
@@ -158,17 +166,22 @@ public class MSButton {
 
   public void draw () {    
     if (flagged)
-      fill(0);
-    else if ( clicked && mines.contains(this) ) 
-      fill(255, 0, 0);
+      flaggedColor = color(0);
+    else if (mines.contains(this) && isWon()) {
+      clicked = false;
+      flaggedColor = color(100, 255, 100);
+    } else if ( clicked && mines.contains(this) ) 
+      flaggedColor = color(255, 0, 0);
     else if (clicked)
-      fill( 200 );
+      flaggedColor = color(200);
     else 
-    fill( 100 );
+    flaggedColor = color(100);
+
+    fill(flaggedColor);
 
     rect(x, y, width, height);
     if (countMines(myRow, myCol)==1) {
-      fill(0, 0, 255);
+      fill(0,0,255);
     } else if (countMines(myRow, myCol) == 2) {
       fill(0, 100, 0);
     } else if (countMines(myRow, myCol) == 3) {
@@ -188,5 +201,8 @@ public class MSButton {
   }
   public boolean isFlagged() {
     return flagged;
+  }
+  public void win(color setColor) {
+    flaggedColor = setColor;
   }
 }
