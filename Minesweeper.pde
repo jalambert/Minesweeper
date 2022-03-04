@@ -60,7 +60,7 @@ public void displayLosingMessage() {
   for (int r = 0; r < NUM_ROWS; r++) {
     for (int c = 0; c < NUM_COLS; c++) {
       if (buttons[r][c].clicked == false) {
-        buttons[r][c].mousePressed();
+        buttons[r][c].mouseReleased();
       }
     }
   }
@@ -119,7 +119,7 @@ public class MSButton {
     flagged = clicked = false;
     Interactive.add( this );
   }
-  public void mousePressed () {
+  public void mouseReleased () {
     clicked = true;
 
     if (!isWon()&&!gameOver) {
@@ -147,7 +147,7 @@ public class MSButton {
             {
               if (isValid(myRow+rr, myCol+cc) && buttons[myRow+rr][myCol+cc].clicked == false)
               {
-                buttons[myRow+rr][myCol+cc].mousePressed();
+                buttons[myRow+rr][myCol+cc].mouseReleased();
               }
             }
           }
